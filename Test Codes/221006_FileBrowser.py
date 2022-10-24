@@ -62,7 +62,7 @@ def select_drive():
     FilePathList.append(selected_drive + ':')
     
     print_FileList()
-        
+         
 def select_file():
     selected_file = input("Select file or directory: ")
     if (selected_file.startswith('\'') and selected_file.endswith('\'')) or (selected_file.startswith('\"') and selected_file.endswith('\"')):
