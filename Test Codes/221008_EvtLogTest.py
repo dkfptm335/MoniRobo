@@ -8,7 +8,7 @@ import re
 import string
 import sys
 import traceback
-
+ 
 def date2sec(evt_date):
 
 	'''
