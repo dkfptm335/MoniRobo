@@ -1,13 +1,8 @@
 from http import server
 import win32evtlog
 import win32con
-import win32profile
 import unicodedata
 import win32evtlogutil
-
-profile = win32profile.GetProfilesDirectory()
-print("User Profile Directory:", profile)
-print("---------------------------------\n")
 
 # 이벤트로그 중 Application 타입의 이벤트로그를 출력
 evtH = win32evtlog.OpenEventLog(None, "Application")
