@@ -25,7 +25,7 @@ print("Total Number of EventLogRecords:", numEvt, "\n")
 
 objects = win32evtlog.ReadEventLog(evtH, win32evtlog.EVENTLOG_BACKWARDS_READ|win32evtlog.EVENTLOG_SEQUENTIAL_READ, 0, 8192)
 
-msg = {}
+# msg = {}
 
 # 각 Property별로 칸 만들기
 print("Record# | TimeGenerated | ComputerName | EventType | SourceName\n")
