@@ -1,7 +1,7 @@
 import win32evtlog # requires pywin32 pre-installed
 
 server = 'localhost' # name of the target computer to get event logs
-logtype = 'System' # 'Application' # 'Security'
+logtype = 'Security' # 'Application' # 'Security'
 hand = win32evtlog.OpenEventLog(server,logtype)
 flags = win32evtlog.EVENTLOG_BACKWARDS_READ|win32evtlog.EVENTLOG_SEQUENTIAL_READ
 total = win32evtlog.GetNumberOfEventLogRecords(hand)
@@ -13,18 +13,17 @@ while count<3:
     events = win32evtlog.ReadEventLog(hand, flags,0)
     if events:
         for event in events:
-            f.write("Record Number: %s\n" % str(event.RecordNumber))
-            print ('Record Number:', event.RecordNumber)
-            print ('Event Category:', event.EventCategory)
-            print ('Time Generated:', event.TimeGenerated)
-            print ('Source Name:', event.SourceName)
-            print ('Event ID:', event.EventID)
-            print ('Event Type:', event.EventType)
+            f.write ("Record Number: %s\n" % str(event.RecordNumber))
+            f.write ("Event Category: %s\n" % str(event.EventCategory))
+            f.write ("Time Generated: %s\n" % str(event.TimeGenerated))
+            f.write ("Source Name: %s\n" % str(event.SourceName))
+            f.write ("Event ID: %s\n" % str(event.EventID))
+            f.write ("Event Type: %s\n" % str(event.EventType))
             data = event.StringInserts
-            print('------------------------------')
+            f.write("------------------------------\n")
             if data:
-                print ('Event Data:')
+                f.write ("Event Data:")
                 for msg in data:
-                    print (msg)
-            print ("=============================================")
+                    f.write (msg)
+            f.write ("\n=============================================\n")
     count += 1
