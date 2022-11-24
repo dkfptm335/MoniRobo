@@ -20,7 +20,7 @@ def filterFile(filename):
             return True
     return False
     
-def get_evtx(_server, _logtype, _time):
+def get_evtx(_server, _logtype, _time, show):
     server = _server # name of the target computer to get event logs
     logtype = _logtype # 'Application' # 'System'
     hand = win32evtlog.OpenEventLog(server,logtype)
@@ -60,49 +60,74 @@ def get_evtx(_server, _logtype, _time):
         df = pd.DataFrame(data)
         df.to_csv(f"C:\\temp\\{_logtype}_evtlog.csv")
     else:
-        data = {'Record #' : [],
+        if show == False:
+            data = {'Record #' : [],
                 'Event Category' : [],
                 'Time Generated' : [],
                 'Source Name' : [],
                 'Event ID' : [], 
-                'Event Type' : [],
-                'Event Data 1' : [],
-                'Event Data 2' : [],
-                'Event Data 3' : []
+                'Event Type' : []
                 }
-        while count<3:
-            events = win32evtlog.ReadEventLog(hand, flags,0)
-            if events:
-                for event in events:
-                    if event.TimeGenerated >= _time:
-                        data['Record #'].append(event.RecordNumber)
-                        data['Event Category'].append(event.EventCategory)
-                        data['Time Generated'].append(event.TimeGenerated)
-                        data['Source Name'].append(event.SourceName)
-                        data['Event ID'].append(event.EventID)
-                        data['Event Type'].append(event.EventType)
-                        #data['Event Data'].append(event.StringInserts)
-                        
-                        StringData = event.StringInserts
-                        StringList = []
-                        if StringData != None:
-                            StringList = list(StringData)
-                        DataLength = len(StringList)
-                        if DataLength < 3:
-                            for i in range(0,3-DataLength):
-                                StringList.append('None')
-                        data['Event Data 1'].append(StringList[0])
-                        data['Event Data 2'].append(StringList[1])
-                        data['Event Data 3'].append(StringList[2])
+            while count < 3:
+                events = win32evtlog.ReadEventLog(hand, flags,0)
+                if events:
+                    for event in events:
+                        if event.TimeGenerated >= _time:
+                            data['Record #'].append(event.RecordNumber)
+                            data['Event Category'].append(event.EventCategory)
+                            data['Time Generated'].append(event.TimeGenerated)
+                            data['Source Name'].append(event.SourceName)
+                            data['Event ID'].append(event.EventID)
+                            data['Event Type'].append(event.EventType)
+                            
+                        else:
+                            break
+                count += 1
 
-                    else:
-                        break
-            count += 1
+        else:
+            data = {'Record #' : [],
+                    'Event Category' : [],
+                    'Time Generated' : [],
+                    'Source Name' : [],
+                    'Event ID' : [], 
+                    'Event Type' : [],
+                    'Event Data 1' : [],
+                    'Event Data 2' : [],
+                    'Event Data 3' : []
+                    }
+            while count<3:
+                events = win32evtlog.ReadEventLog(hand, flags,0)
+                if events:
+                    for event in events:
+                        if event.TimeGenerated >= _time:
+                            data['Record #'].append(event.RecordNumber)
+                            data['Event Category'].append(event.EventCategory)
+                            data['Time Generated'].append(event.TimeGenerated)
+                            data['Source Name'].append(event.SourceName)
+                            data['Event ID'].append(event.EventID)
+                            data['Event Type'].append(event.EventType)
+                            #data['Event Data'].append(event.StringInserts)
+                            
+                            StringData = event.StringInserts
+                            StringList = []
+                            if StringData != None:
+                                StringList = list(StringData)
+                            DataLength = len(StringList)
+                            if DataLength < 3:
+                                for i in range(0,3-DataLength):
+                                    StringList.append('None')
+                            data['Event Data 1'].append(StringList[0])
+                            data['Event Data 2'].append(StringList[1])
+                            data['Event Data 3'].append(StringList[2])
 
-        df = pd.DataFrame(data)
-        df.to_csv(f"C:\\temp\\{_logtype}_evtlog.csv")
+                        else:
+                            break
+                count += 1
 
-        
+            df = pd.DataFrame(data)
+            df.to_csv(f"C:\\temp\\{_logtype}_evtlog.csv")
+
+            
 WATCHED_DIR = "C:\\"
 
 FILE_ACTIONS = {
@@ -137,7 +162,7 @@ def main():
             None                                    # hTemplateFile
         )
         count = 0
-        while count < 500:
+        while count < 100:
             # read directory changes async
             win32file.ReadDirectoryChangesW(
                 hDir,   
@@ -186,9 +211,9 @@ def main():
         end = datetime.datetime.now()
         d = pd.DataFrame(record_data)
         d.to_csv("C:\\temp\\scan_log.csv")
-        get_evtx('localhost', 'Security', start)
-        get_evtx('localhost', "Application", start)
-        get_evtx('localhost', "System", start)
+        get_evtx('localhost', 'Security', start, False)
+        get_evtx('localhost', "Application", start, False)
+        get_evtx('localhost', "System", start, False)
 
 if __name__ == "__main__":
     start = datetime.datetime.now()
