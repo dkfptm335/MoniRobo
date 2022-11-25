@@ -21,9 +21,9 @@ def filterFile(filename):
     return False
     
 def get_evtx(_server, _StartTime, _PrintEventString):
-    server = _server # name of the target computer to get event logs
-    hand_Security = win32evtlog.OpenEventLog(server, "Security")
-    hand_System = win32evtlog.OpenEventLog(server, "System")
+    server = _server 
+    hand_Security    = win32evtlog.OpenEventLog(server, "Security")
+    hand_System      = win32evtlog.OpenEventLog(server, "System")
     hand_Application = win32evtlog.OpenEventLog(server, "Application")
     flags = win32evtlog.EVENTLOG_BACKWARDS_READ|win32evtlog.EVENTLOG_SEQUENTIAL_READ
 
@@ -211,99 +211,6 @@ def get_evtx(_server, _StartTime, _PrintEventString):
     DataFrame.to_csv("C:\\temp\\EvtLog_True.csv")
     print("bye")
     
-    '''
-    if _logtype == "Security":
-        data = {'Record #' : [],
-                'Event Category' : [],
-                'Time Generated' : [],
-                'Source Name' : [],
-                'Event ID' : [], 
-                'Event Type' : [],
-                'Event Data 1' : [],
-                'Event Data 2' : [],
-                'Event Data 3' : []
-                }
-        while True:
-            events = win32evtlog.ReadEventLog(hand, flags,0)
-            if events:
-                for event in events:
-                    if event.TimeGenerated >= _StartTime:
-                        data['Record #'].append(event.RecordNumber)
-                        data['Event Category'].append(event.EventCategory)
-                        data['Time Generated'].append(event.TimeGenerated)
-                        data['Source Name'].append(event.SourceName)
-                        data['Event ID'].append(event.EventID)
-                        data['Event Type'].append(event.EventType)
-                        String = event.StringInserts
-                        data['Event Data 1'].append(String[0])
-                        data['Event Data 2'].append(String[1])
-                        data['Event Data 3'].append(String[2])
-                    else:
-                        break
-        df = pd.DataFrame(data)
-        df.to_csv(f"C:\\temp\\{_logtype}_evtlog.csv")
-    else:
-        if _PrintEventString == False:
-            data = {'Record #' : [],
-                    'Event Category' : [],
-                    'Time Generated' : [],
-                    'Source Name' : [],
-                    'Event ID' : [], 
-                    'Event Type' : []
-                    }
-            while True:
-                events = win32evtlog.ReadEventLog(hand, flags, 0)
-                if events:
-                    for event in events:
-                        if event.TimeGenerated >= _StartTime:
-                            data['Record #'].append(event.RecordNumber)
-                            data['Event Category'].append(event.EventCategory)
-                            data['Time Generated'].append(event.TimeGenerated)
-                            data['Source Name'].append(event.SourceName)
-                            data['Event ID'].append(event.EventID)
-                            data['Event Type'].append(event.EventType)
-                        else:
-                            break
-        else:
-            data = {'Record #' : [],
-                    'Event Category' : [],
-                    'Time Generated' : [],
-                    'Source Name' : [],
-                    'Event ID' : [], 
-                    'Event Type' : [],
-                    'Event Data 1' : [],
-                    'Event Data 2' : [],
-                    'Event Data 3' : []
-                    }
-            while True:
-                events = win32evtlog.ReadEventLog(hand, flags,0)
-                if events:
-                    for event in events:
-                        if event.TimeGenerated >= _StartTime:
-                            data['Record #'].append(event.RecordNumber)
-                            data['Event Category'].append(event.EventCategory)
-                            data['Time Generated'].append(event.TimeGenerated)
-                            data['Source Name'].append(event.SourceName)
-                            data['Event ID'].append(event.EventID)
-                            data['Event Type'].append(event.EventType)
-                            
-                            StringData = event.StringInserts
-                            StringList = []
-                            if StringData != None:
-                                StringList = list(StringData)
-                            DataLength = len(StringList)
-                            if DataLength < 3:
-                                for i in range(0,3-DataLength):
-                                    StringList.append('None')
-                            data['Event Data 1'].append(StringList[0])
-                            data['Event Data 2'].append(StringList[1])
-                            data['Event Data 3'].append(StringList[2])
-                        else:
-                            break
-        df = pd.DataFrame(data)
-        df.to_csv(f"C:\\temp\\{_logtype}_evtlog.csv")
-    print("bye")
-    '''
 WATCHED_DIR = "C:\\"
 
 FILE_ACTIONS = {
