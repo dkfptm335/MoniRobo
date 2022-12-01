@@ -152,84 +152,55 @@ def get_evtx(server, StartTime, button):
     EndRecording_Application = False # 추출한 로그의 시간이 start 버튼 누른 시간보다 이전이면 True로 바뀜
 
     count=0
-    if button == True:
-        while True: 
-            print("1")
-            count += 1 
-            events_Security    = win32evtlog.ReadEventLog(hand_Security, flags,0, 8192)
-            events_System      = win32evtlog.ReadEventLog(hand_System, flags,0, 8192)
-            events_Application = win32evtlog.ReadEventLog(hand_Application, flags,0, 8192)               
-            if events_Security:
-                print("2")
-                for event in events_Security:
-                    if event.TimeGenerated < StartTime:
-                        print("3")
-                        EndRecording_Security = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
-                        break
-                    else:
-                        print("4")
-                        create_feature("Security", button, events_Security)
-            if events_System:
-                print("5")
-                for event in events_System:
-                    if event.TimeGenerated < StartTime:
-                        print("6")
-                        EndRecording_System = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
-                        break
-                    else:
-                        print("7")
-                        create_feature("System", button, events_System)                        
-            if events_Application:
-                print("8")
-                for event in events_Application:
-                    print("9")
-                    if event.TimeGenerated < StartTime:
-                        print("10")
-                        EndRecording_Application = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
-                        break
-                    else:
-                        print("11")
-                        create_feature("Application", button, events_Application)
-            print("12")
+    while True: 
+        print("1")
+        count += 1 
+        events_Security    = win32evtlog.ReadEventLog(hand_Security, flags,0, 8192)
+        events_System      = win32evtlog.ReadEventLog(hand_System, flags,0, 8192)
+        events_Application = win32evtlog.ReadEventLog(hand_Application, flags,0, 8192)               
+        if events_Security:
+            print("2")
+            for event in events_Security:
+                if event.TimeGenerated < StartTime:
+                    print("3")
+                    EndRecording_Security = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
+                    break
+                else:
+                    print("4")
+                    create_feature("Security", button, events_Security)
+        if events_System:
+            print("5")
+            for event in events_System:
+                if event.TimeGenerated < StartTime:
+                    print("6")
+                    EndRecording_System = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
+                    break
+                else:
+                    print("7")
+                    create_feature("System", button, events_System)                        
+        if events_Application:
+            print("8")
+            for event in events_Application:
+                print("9")
+                if event.TimeGenerated < StartTime:
+                    print("10")
+                    EndRecording_Application = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
+                    break
+                else:
+                    print("11")
+                    create_feature("Application", button, events_Application)
+        print("12")
+        if button==True:
             DataFrame = pd.DataFrame(feature1)
             DataFrame.to_csv("C:\\temp\\EvtLog_%d.csv" % count)
-            print("13")
-            clear_feature()
-            if EndRecording_Security == EndRecording_System == EndRecording_Application == True:
-                print("14")
-                break # 모든 로그의 생성시간이 start버튼 누르기 전으로 바꼈으므로 무한반복 while문을 종료
-    else:
-        while True:
-            count += 1
-            events_Security    = win32evtlog.ReadEventLog(hand_Security, flags,0)
-            events_System      = win32evtlog.ReadEventLog(hand_System, flags,0)
-            events_Application = win32evtlog.ReadEventLog(hand_Application, flags,0)
-            if events_Security:
-                for event in events_Security:
-                    if event.TimeGenerated < StartTime:
-                        EndRecording_Security = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
-                        break
-                    else:
-                        create_feature("Security", button, events_Security)
-            if events_System:
-                for event in events_System:
-                    if event.TimeGenerated < StartTime:
-                        EndRecording_System = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
-                        break
-                    else:
-                        create_feature("System", button, events_System)
-            if events_Application:
-                for event in events_Application:
-                    if event.TimeGenerated < StartTime:
-                        EndRecording_Application = True # 로그의 생성시간이 start버튼 누른 시간보다 이전이므로 True로 바꾸고 break
-                        break
-                    else:
-                        create_feature("Application", button, events_Application)
+        elif button==False:
             DataFrame = pd.DataFrame(feature2)
             DataFrame.to_csv("C:\\temp\\EvtLog_%d.csv" % count)
-            clear_feature()
-            if EndRecording_Security == EndRecording_System == EndRecording_Application == True:
-                break # 모든 로그의 생성시간이 start버튼 누르기 전으로 바꼈으므로 무한반복 while문을 종료
+        print("13")
+        clear_feature()
+        if EndRecording_Security == EndRecording_System == EndRecording_Application == True:
+            print("14")
+            break # 모든 로그의 생성시간이 start버튼 누르기 전으로 바꼈으므로 무한반복 while문을 종료
 
 def live_monitoring(): 
     FILE_ACTIONS = {
@@ -261,7 +232,7 @@ def live_monitoring():
         win32con.FILE_FLAG_OVERLAPPED, # async
         None                                    # hTemplateFile
     )
-    EndTime = datetime.datetime(2022, 12, 2, 1, 30, 00)
+    EndTime = datetime.datetime(2022, 12, 2, 2, 53, 00)
 
     while True:
         CurrentTime = datetime.datetime.now()
@@ -308,7 +279,7 @@ def live_monitoring():
     FileData_Dataframe = pd.DataFrame(FileData)
     FileData_Dataframe.to_csv("C:\\temp\\LiveScanLog.csv")
       
-    button = True #True/False 체크박스 사용자 선택
+    button = False #True/False 체크박스 사용자 선택
     get_evtx('localhost', StartTime, button)
 
 if __name__ == "__main__":
