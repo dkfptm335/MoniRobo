@@ -32,7 +32,7 @@ FilePath = None
 # 여기부터 ButtonTrue.py 코드
 filter_filetype = [".txt", ".exe", "hwp"]
 
-WATCHED_DIR = "C:\\Users" # 라이브스캐닝의 대상 디렉터리
+WATCHED_DIR = "C:" # 라이브스캐닝의 대상 디렉터리
 
 feature1 = { 'Log Type'       : [],
              'Record #'       : [],
@@ -277,13 +277,16 @@ class App(ttk.Frame):
         self.setup_widgets()
 
     def get_FilePath(self):
+        global WATCHED_DIR
         if len(FilePathList) == 1 and (FilePathList[0] == 'C:' or FilePathList[0] == 'D:' or FilePathList[0] == "E:"
                                        or FilePathList[0] == "F:" or FilePathList[0] == "G:" or FilePathList[
                                            0] == "H:"):
+            WATCHED_DIR = FilePathList[0] + '\\'
             return FilePathList[0] + '\\'
 
         else:
             FilePath = '\\'.join(FilePathList)
+            WATCHED_DIR = FilePath
             return FilePath
 
     def get_drives(self):
