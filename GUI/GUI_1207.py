@@ -29,10 +29,10 @@ from pandastable.data import TableModel
 
 FilePathList = []
 FilePath = None
-# 여기부터 ButtonTrue.py 코드
+# 여기부터 ButtonTrue.py 코드w
 filter_filetype = [".txt", ".exe", "hwp"]
 
-WATCHED_DIR = "C:" # 라이브스캐닝의 대상 디렉터리
+WATCHED_DIR = "C:\\" # 라이브스캐닝의 대상 디렉터리
 
 feature1 = { 'Log Type'       : [],
              'Record #'       : [],
@@ -54,12 +54,12 @@ feature2 = { 'Log Type'       : [],
              'Event Type'     : [],
            }
 FILE_ACTIONS = {
-        1 : "created",
-        2 : "deleted",
-        3 : "updated",
-        4 : "renamed from",
-        5 : "renamed to"
-        }
+            1 : "created",
+            2 : "deleted",
+            3 : "updated",
+            4 : "renamed from",
+            5 : "renamed to"
+}
 FileData = {
     'Action' : [],
     'File'   : [],
@@ -67,21 +67,7 @@ FileData = {
 }
 StartTime = datetime.datetime.now()
 ol = pywintypes.OVERLAPPED()
-buf = win32file.AllocateReadBuffer(1024)
-    
-# 디렉토리
-hDir = win32file.CreateFile (
-    WATCHED_DIR,                            # fileName
-    0x0001, # FILE_LIST_DIRECTORY           # desiredAccess
-    win32con.FILE_SHARE_READ |              # shareMode
-    win32con.FILE_SHARE_WRITE | 
-    win32con.FILE_SHARE_DELETE,
-    None,                                   # attributes
-    win32con.OPEN_EXISTING,                 # CreationDisposition
-    win32con.FILE_FLAG_BACKUP_SEMANTICS |   # flagsAndAttributes
-    win32con.FILE_FLAG_OVERLAPPED, # async
-    None                                    # hTemplateFile
-)
+buf = win32file.AllocateReadBuffer(1024)    
 
 def clear_feature():
     feature1['Log Type'].clear()
@@ -179,6 +165,7 @@ def create_feature(logtype, button, events):
             return
 
 def get_evtx(server, StartTime, button):
+    global WATCHED_DIR
     hand_Security    = win32evtlog.OpenEventLog(server, "Security")
     hand_System      = win32evtlog.OpenEventLog(server, "System")
     hand_Application = win32evtlog.OpenEventLog(server, "Application")
@@ -187,7 +174,6 @@ def get_evtx(server, StartTime, button):
     EndRecording_Security    = False # 추출한 로그의 시간이 start 버튼 누른 시간보다 이전이면 True로 바뀜
     EndRecording_System      = False # 추출한 로그의 시간이 start 버튼 누른 시간보다 이전이면 True로 바뀜
     EndRecording_Application = False # 추출한 로그의 시간이 start 버튼 누른 시간보다 이전이면 True로 바뀜
-
     count=0
     while True: 
         count += 1 
@@ -217,14 +203,19 @@ def get_evtx(server, StartTime, button):
                     create_feature("Application", button, events_Application)
         if button==True:
             DataFrame = pd.DataFrame(feature1)
-            DataFrame.to_csv("C:\\temp\\EvtLog_%d.csv" % count)
+            SavePath=str(WATCHED_DIR+"EvtLog_"+str(count)+".csv")
+            print(SavePath)
+            DataFrame.to_csv(SavePath)
+            #DataFrame.to_csv("C:\\Temp\\EvtLog_%d.csv" % count)
         elif button==False:
             DataFrame = pd.DataFrame(feature2)
-            DataFrame.to_csv("C:\\temp\\EvtLog_%d.csv" % count)
+            SavePath=str(WATCHED_DIR+"EvtLog_"+str(count)+".csv")
+            print(SavePath)
+            DataFrame.to_csv(SavePath)
+            #DataFrame.to_csv("C:\\Temp\\EvtLog_%d.csv" % count)
         clear_feature()
         if EndRecording_Security == EndRecording_System == EndRecording_Application == True:
             break # 모든 로그의 생성시간이 start버튼 누르기 전으로 바꼈으므로 무한반복 while문을 종료
-
 
 class MyTable(Table):
     """
@@ -281,13 +272,13 @@ class App(ttk.Frame):
         if len(FilePathList) == 1 and (FilePathList[0] == 'C:' or FilePathList[0] == 'D:' or FilePathList[0] == "E:"
                                        or FilePathList[0] == "F:" or FilePathList[0] == "G:" or FilePathList[
                                            0] == "H:"):
-            WATCHED_DIR = FilePathList[0] + '\\'
+            WATCHED_DIR = str(FilePathList[0] + '\\')
             return FilePathList[0] + '\\'
 
         else:
             FilePath = '\\'.join(FilePathList)
-            WATCHED_DIR = FilePath
-            return FilePath
+            WATCHED_DIR = str(FilePath+'\\')
+            return str(WATCHED_DIR)
 
     def get_drives(self):
         drives = []
@@ -432,18 +423,34 @@ class App(ttk.Frame):
         pt.show()
         
     def rp_monitoring(self):
+        global WATCHED_DIR
         CurrentTime = datetime.datetime.now()
         if not doMonitoring:
             self.monitoring.config(state="disabled")
             
             FileData_Dataframe = pd.DataFrame(FileData)
-            FileData_Dataframe.to_csv("C:\\temp\\LiveScanLog.csv")
+            SavePath=str(WATCHED_DIR+"LiveScanLog.csv")
+            FileData_Dataframe.to_csv(SavePath)
+            #FileData_Dataframe.to_csv("C:\\Temp\\LiveScanLog.csv")
             if (self.var_1.get()):
                 button=True
             else:
                 button=False
             get_evtx('localhost', StartTime, button)
             return
+        # 디렉토리
+        hDir = win32file.CreateFile (
+            WATCHED_DIR,                            # fileName
+            0x0001, # FILE_LIST_DIRECTORY           # desiredAccess
+            win32con.FILE_SHARE_READ |              # shareMode
+            win32con.FILE_SHARE_WRITE | 
+            win32con.FILE_SHARE_DELETE,
+            None,                                   # attributes
+            win32con.OPEN_EXISTING,                 # CreationDisposition
+            win32con.FILE_FLAG_BACKUP_SEMANTICS |   # flagsAndAttributes
+            win32con.FILE_FLAG_OVERLAPPED, # async
+            None                                    # hTemplateFile
+        )
 
         # read directory changes async
         win32file.ReadDirectoryChangesW(
@@ -476,7 +483,7 @@ class App(ttk.Frame):
         for action, filename in result:
             self.var_6.set("")
             self.var_6.set(self.var_6.get() + "Alert! File Action Alert!!\n")
-            self.var_6.set(self.var_6.get() + FILE_ACTIONS.get(action, "Unknown") + filename + "\n")
+            self.var_6.set(self.var_6.get() + FILE_ACTIONS.get(action, "Unknown") +"  "+ filename + "\n")
             #print("Alert! File Action Alert!!")
             #print(FILE_ACTIONS.get(action, "Unknown"), filename)
             FileData['Action'].append(FILE_ACTIONS.get(action, "Unknown"))
@@ -489,7 +496,7 @@ class App(ttk.Frame):
             #print(self.cntline)
             self.monitoring.insert(self.cntline, self.var_6.get())
             self.cntline=self.cntline+4.0
-        self.after(10000,self.rp_monitoring)
+        self.after(3000,self.rp_monitoring)
 
     def stop(self):
         global doMonitoring
@@ -641,7 +648,7 @@ class App(ttk.Frame):
         )
 
         self.explorer.insert(tk.CURRENT, "How to Use\n\
-1. Press \"Start Explore\" Button to start!\n\
+1. Press \"Start Explorer\" Button to start!\n\
 2. Select Directory that You Want to Monitoring!\n\
 3. If You Finish Selected Path, then Press STEP 2 Tab\
 ")
@@ -650,7 +657,7 @@ class App(ttk.Frame):
 
         self.pane_2 = ttk.Frame(self.paned, padding=5)
         self.paned.add(self.pane_2, weight=3)
-        self.button_start = ttk.Button(self.pane_2, text="Start Explore", command=self.select_drive)
+        self.button_start = ttk.Button(self.pane_2, text="Start Explorer", command=self.select_drive)
         self.button_start.grid(row=1, column=0, padx=(20, 10), pady=(20, 10), sticky="nsew")
 
         self.entry = tk.Entry(self.pane_2, width=30)
@@ -684,7 +691,7 @@ class App(ttk.Frame):
 2. Choose CSV Option (If You Check 'Save Detail', You Can Get More Information about Event Log in CSV file )\n\
 3. Press \"Start Monitoring\" Button to Start!\n\
 4. If You Want to Stop Monitoring, Press \"Stop Monitoring\" Button to Stop!\n\
-5. After Monitoring, CSV files Will be Stored in the 'C:/Temp' Path.\n\
+5. After Monitoring, CSV files Will be Stored in the Current Path.\n\
 6. If You Want to Read CSV files, Please Press STEP 3 Tab\n\n\
 Current Path: C:\\")
         self.monitoring.pack(expand=True, fill="both")
