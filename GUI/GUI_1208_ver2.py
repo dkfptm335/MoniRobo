@@ -411,10 +411,6 @@ class App(ttk.Frame):
         pt.show()
         
     def rp_monitoring(self):
-        global doMonitoring
-        doMonitoring = True
-        self.button_end2.config(state="normal")
-        self.button_start2.config(state="disabled")
         global WATCHED_DIR
         if not doMonitoring:
             self.monitoring.config(state="disabled")
@@ -504,6 +500,7 @@ class App(ttk.Frame):
         self.monitoring.insert(2.1, self.var_6.get())
         global doMonitoring
         doMonitoring = True
+        self.rp_monitoring()
         self.button_end2.config(state="normal")
         self.button_start2.config(state="disabled")
 
